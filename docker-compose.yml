@@ -1,0 +1,89 @@
+services:
+  # ─── PostgreSQL Database ─────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: gpmh-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: gpmh_user
+      POSTGRES_PASSWORD: gpmh_secret
+      POSTGRES_DB: gpmh_platform
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gpmh_user -d gpmh_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── Redis Cache ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: gpmh-redis
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─── Backend (Node.js + Express + Prisma) ────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gpmh-backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://gpmh_user:gpmh_secret@postgres:5432/gpmh_platform?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_ACCESS_SECRET: "gpmh-access-secret-change-in-production-abc123"
+      JWT_REFRESH_SECRET: "gpmh-refresh-secret-change-in-production-xyz789"
+      JWT_ACCESS_EXPIRY: "15m"
+      JWT_REFRESH_EXPIRY: "7d"
+      PORT: "5000"
+      NODE_ENV: "development"
+      PLATFORM_DOMAIN: "gpmh.local"
+      SUPERADMIN_EMAIL: "admin@platform.com"
+      SUPERADMIN_PASSWORD: "Admin@123"
+    volumes:
+      - backend_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ─── Frontend (React + Vite → built → nginx) ────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "http://admin.gpmh.local/api"
+        VITE_PLATFORM_DOMAIN: "gpmh.local"
+    container_name: gpmh-frontend
+    restart: unless-stopped
+
+  # ─── Nginx Gateway (subdomain routing) ──────────────────────
+  gateway:
+    image: nginx:alpine
+    container_name: gpmh-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  pgdata:
+  redisdata:
+  backend_uploads:
+

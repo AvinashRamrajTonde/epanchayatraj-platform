@@ -1,0 +1,620 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tehsil {
+  id         String    @id @default(cuid())
+  name       String
+  nameEn     String?   @map("name_en")
+  district   String
+  districtEn String?   @map("district_en")
+  state      String
+  stateSlug  String?   @map("state_slug")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  villages   Village[]
+
+  @@map("tehsils")
+}
+
+model Village {
+  id                 String                   @id @default(cuid())
+  name               String
+  slug               String                   @unique
+  subdomain          String                   @unique
+  customDomain       String?                  @unique @map("custom_domain")
+  status             String                   @default("active")
+  theme              String                   @default("classic")
+  settings           Json                     @default("{}")
+  tehsilId           String                   @map("tehsil_id")
+  tehsil             Tehsil                   @relation(fields: [tehsilId], references: [id])
+  users              User[]
+  members            Member[]
+  notices            Notice[]
+  galleryImages      GalleryImage[]
+  contents           VillageContent[]
+  applications       Application[]
+  heroSlides         HeroSlide[]
+  programs           Program[]
+  schemes            Scheme[]
+  contactSubmissions ContactSubmission[]
+  awards             Award[]
+  financialReports   FinancialReport[]
+  gramsabhas         Gramsabha[]
+  schools            School[]
+  developmentWorks   DevelopmentWork[]
+  families           Family[]
+  certificateApps    CertificateApplication[]
+  paymentConfig      VillagePaymentConfig?
+  subscription       VillageSubscription?
+  complaints         Complaint[]
+  taxPayments        TaxPayment[]
+  createdAt          DateTime                 @default(now()) @map("created_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([subdomain])
+  @@index([status])
+  @@map("villages")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("citizen")
+  villageId String?  @map("village_id")
+  village   Village? @relation(fields: [villageId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([role])
+  @@index([villageId])
+  @@map("users")
+}
+
+model Member {
+  id          String   @id @default(cuid())
+  villageId   String   @map("village_id")
+  village     Village  @relation(fields: [villageId], references: [id])
+  name        String
+  designation String
+  type        String   @default("member")
+  phone       String?
+  email       String?
+  photoUrl    String?  @map("photo_url")
+  bio         String?
+  backContent Json?    @map("back_content")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([type])
+  @@map("members")
+}
+
+model Notice {
+  id          String    @id @default(cuid())
+  villageId   String    @map("village_id")
+  village     Village   @relation(fields: [villageId], references: [id])
+  title       String
+  content     String
+  category    String    @default("general")
+  imageUrl    String?   @map("image_url")
+  priority    String    @default("normal")
+  isPopup     Boolean   @default(false) @map("is_popup")
+  isPublished Boolean   @default(true) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([category])
+  @@map("notices")
+}
+
+model GalleryImage {
+  id        String   @id @default(cuid())
+  villageId String   @map("village_id")
+  village   Village  @relation(fields: [villageId], references: [id])
+  title     String?
+  imageUrl  String   @map("image_url")
+  caption   String?
+  category  String   @default("general")
+  sortOrder Int      @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([villageId])
+  @@index([category])
+  @@map("gallery_images")
+}
+
+model VillageContent {
+  id        String   @id @default(cuid())
+  villageId String   @map("village_id")
+  village   Village  @relation(fields: [villageId], references: [id])
+  section   String
+  content   Json     @default("{}")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([villageId, section])
+  @@index([villageId])
+  @@map("village_contents")
+}
+
+model Application {
+  id             String    @id @default(cuid())
+  villageId      String    @map("village_id")
+  village        Village   @relation(fields: [villageId], references: [id])
+  applicantName  String    @map("applicant_name")
+  applicantPhone String    @map("applicant_phone")
+  applicantEmail String?   @map("applicant_email")
+  serviceType    String    @map("service_type")
+  description    String?
+  status         String    @default("pending")
+  remarks        String?
+  attachmentUrl  String?   @map("attachment_url")
+  certificateUrl String?   @map("certificate_url")
+  processedAt    DateTime? @map("processed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([status])
+  @@index([serviceType])
+  @@map("applications")
+}
+
+model HeroSlide {
+  id        String   @id @default(cuid())
+  villageId String   @map("village_id")
+  village   Village  @relation(fields: [villageId], references: [id])
+  imageUrl  String   @map("image_url")
+  altText   String?  @map("alt_text")
+  sortOrder Int      @default(0) @map("sort_order")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([villageId])
+  @@map("hero_slides")
+}
+
+model Program {
+  id          String    @id @default(cuid())
+  villageId   String    @map("village_id")
+  village     Village   @relation(fields: [villageId], references: [id])
+  title       String
+  description String?
+  category    String    @default("general")
+  location    String?
+  date        DateTime?
+  images      Json?
+  highlights  Json?
+  result      String?
+  isPublished Boolean   @default(true) @map("is_published")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([category])
+  @@map("programs")
+}
+
+model Scheme {
+  id                 String   @id @default(cuid())
+  villageId          String   @map("village_id")
+  village            Village  @relation(fields: [villageId], references: [id])
+  title              String
+  description        String?
+  category           String   @default("welfare")
+  benefits           Json?
+  eligibility        Json?
+  documents          Json?
+  applicationProcess Json?    @map("application_process")
+  contactInfo        String?  @map("contact_info")
+  budget             String?
+  beneficiaries      String?
+  imageUrl           String?  @map("image_url")
+  schemeLink         String?  @map("scheme_link")
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([category])
+  @@map("schemes")
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  villageId String   @map("village_id")
+  village   Village  @relation(fields: [villageId], references: [id])
+  name      String
+  phone     String?
+  email     String?
+  subject   String?
+  message   String
+  status    String   @default("new")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([villageId])
+  @@index([status])
+  @@map("contact_submissions")
+}
+
+model Award {
+  id          String   @id @default(cuid())
+  villageId   String   @map("village_id")
+  village     Village  @relation(fields: [villageId], references: [id])
+  title       String
+  description String?
+  year        Int?
+  category    String   @default("general")
+  awardedBy   String?  @map("awarded_by")
+  imageUrl    String?  @map("image_url")
+  sortOrder   Int      @default(0) @map("sort_order")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([category])
+  @@map("awards")
+}
+
+model FinancialReport {
+  id            String   @id @default(cuid())
+  villageId     String   @map("village_id")
+  village       Village  @relation(fields: [villageId], references: [id])
+  financialYear String   @map("financial_year")
+  incomeAmount  Float    @map("income_amount")
+  expenseAmount Float    @map("expense_amount")
+  balanceAmount Float    @map("balance_amount")
+  pdfUrl        String?  @map("pdf_url")
+  isPublished   Boolean  @default(true) @map("is_published")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([villageId, financialYear])
+  @@index([villageId])
+  @@map("financial_reports")
+}
+
+model Gramsabha {
+  id              String   @id @default(cuid())
+  villageId       String   @map("village_id")
+  village         Village  @relation(fields: [villageId], references: [id])
+  title           String
+  date            DateTime
+  time            String?
+  location        String?
+  agenda          String?
+  status          String   @default("scheduled")
+  attendeesTotal  Int?     @map("attendees_total")
+  attendeesMale   Int?     @map("attendees_male")
+  attendeesFemale Int?     @map("attendees_female")
+  minutes         String?
+  decisions       Json?
+  imageUrl        String?  @map("image_url")
+  pdfUrl          String?  @map("pdf_url")
+  noticeId        String?  @map("notice_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([date])
+  @@map("gramsabhas")
+}
+
+model DevelopmentWork {
+  id               String   @id @default(cuid())
+  villageId        String   @map("village_id")
+  village          Village  @relation(fields: [villageId], references: [id])
+  schemeName       String   @map("scheme_name")
+  workName         String   @map("work_name")
+  financialYear    String   @map("financial_year")
+  sanctionedAmount Float    @map("sanctioned_amount")
+  expendedAmount   Float    @default(0) @map("expended_amount")
+  status           String   @default("in_progress")
+  isPublished      Boolean  @default(true) @map("is_published")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([financialYear])
+  @@index([status])
+  @@map("development_works")
+}
+
+model School {
+  id              String   @id @default(cuid())
+  villageId       String   @map("village_id")
+  village         Village  @relation(fields: [villageId], references: [id])
+  name            String
+  address         String?
+  principalName   String?  @map("principal_name")
+  principalPhoto  String?  @map("principal_photo")
+  schoolPhoto     String?  @map("school_photo")
+  boysCount       Int      @default(0) @map("boys_count")
+  girlsCount      Int      @default(0) @map("girls_count")
+  teachersCount   Int      @default(0) @map("teachers_count")
+  establishedYear Int?     @map("established_year")
+  phone           String?
+  email           String?
+  managementType  String?  @map("management_type")
+  medium          String?
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@map("schools")
+}
+
+// ─── Citizen Portal Models ─────────────────────────────────────────
+
+model CitizenUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  phone        String?   @unique
+  mobile       String?
+  googleId     String?   @unique @map("google_id")
+  name         String
+  passwordHash String?   @map("password_hash")
+  isVerified   Boolean   @default(false) @map("is_verified")
+  otp          String?
+  otpExpiresAt DateTime? @map("otp_expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  families     Family[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([googleId])
+  @@map("citizen_users")
+}
+
+model GlobalSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("global_settings")
+}
+
+model SmtpConfig {
+  id        String   @id @default(cuid())
+  host      String
+  port      Int      @default(587)
+  secure    Boolean  @default(false)
+  username  String
+  password  String
+  fromEmail String   @map("from_email")
+  fromName  String   @default("ग्रामपंचायत पोर्टल") @map("from_name")
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("smtp_configs")
+}
+
+model Family {
+  id             String                   @id @default(cuid())
+  familyId       String                   @unique @map("family_id") // Human-readable family ID like "FAM-XXXX"
+  villageId      String                   @map("village_id")
+  village        Village                  @relation(fields: [villageId], references: [id])
+  citizenUserId  String                   @map("citizen_user_id")
+  citizenUser    CitizenUser              @relation(fields: [citizenUserId], references: [id])
+  headName       String                   @map("head_name")
+  headDob        DateTime                 @map("head_dob")
+  headAadhar     String                   @unique @map("head_aadhar")
+  headRationCard String?                  @map("head_ration_card")
+  headVoterId    String?                  @map("head_voter_id")
+  createdAt      DateTime                 @default(now()) @map("created_at")
+  updatedAt      DateTime                 @updatedAt @map("updated_at")
+  members        FamilyMember[]
+  certificates   CertificateApplication[]
+
+  @@index([villageId])
+  @@index([citizenUserId])
+  @@map("families")
+}
+
+model FamilyMember {
+  id           String                   @id @default(cuid())
+  familyId     String                   @map("family_id")
+  family       Family                   @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  name         String
+  dob          DateTime
+  aadhar       String                   @unique
+  voterId      String?                  @map("voter_id")
+  relation     String // e.g. "wife", "son", "daughter", "father", "mother"
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+  certificates CertificateApplication[]
+
+  @@index([familyId])
+  @@map("family_members")
+}
+
+model CertificateType {
+  id                String                   @id @default(cuid())
+  code              String                   @unique // e.g. "birth", "death", "marriage", etc.
+  nameMarathi       String                   @map("name_marathi")
+  nameEnglish       String                   @map("name_english")
+  fee               Float                    @default(0) // 0 means free (निशुल्कः)
+  processingDays    Int                      @default(5) @map("processing_days")
+  requiredDocuments Json?                    @map("required_documents") // Array of required doc descriptions
+  designatedOfficer String?                  @map("designated_officer")
+  firstAppellate    String?                  @map("first_appellate")
+  secondAppellate   String?                  @map("second_appellate")
+  isActive          Boolean                  @default(true) @map("is_active")
+  createdAt         DateTime                 @default(now()) @map("created_at")
+  applications      CertificateApplication[]
+
+  @@map("certificate_types")
+}
+
+model CertificateApplication {
+  id                String              @id @default(cuid())
+  applicationNo     String              @unique @map("application_no") // Auto-generated: "CERT-YYYY-XXXXX"
+  villageId         String              @map("village_id")
+  village           Village             @relation(fields: [villageId], references: [id])
+  familyId          String              @map("family_id")
+  family            Family              @relation(fields: [familyId], references: [id])
+  familyMemberId    String?             @map("family_member_id")
+  familyMember      FamilyMember?       @relation(fields: [familyMemberId], references: [id])
+  certificateTypeId String              @map("certificate_type_id")
+  certificateType   CertificateType     @relation(fields: [certificateTypeId], references: [id])
+  applicantName     String              @map("applicant_name")
+  applicantAadhar   String              @map("applicant_aadhar")
+  formData          Json                @map("form_data") // Certificate-specific fields as JSON
+  documents         Json? // Array of uploaded document URLs
+  status            String              @default("under_review") // under_review, approved, rejected
+  rejectionReason   String?             @map("rejection_reason")
+  adminRemarks      String?             @map("admin_remarks")
+  certificateNo     String?             @map("certificate_no") // Assigned on approval
+  certificateUrl    String?             @map("certificate_url") // Generated certificate PDF URL (deprecated - PDFs now generated on-demand)
+  pdfGeneratedAt    DateTime?           @map("pdf_generated_at") // Last PDF generation timestamp
+  dispatchNo        String?             @map("dispatch_no") // जा.क्र.
+  appliedByAdmin    Boolean             @default(false) @map("applied_by_admin")
+  processedAt       DateTime?           @map("processed_at")
+  issuedAt          DateTime?           @map("issued_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  payment           CertificatePayment?
+
+  @@index([villageId])
+  @@index([familyId])
+  @@index([status])
+  @@index([certificateTypeId])
+  @@index([applicationNo])
+  @@map("certificate_applications")
+}
+
+model CertificatePayment {
+  id                 String                 @id @default(cuid())
+  applicationId      String                 @unique @map("application_id")
+  application        CertificateApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  amount             Float
+  utrNumber          String?                @map("utr_number")
+  screenshotUrl      String?                @map("screenshot_url")
+  paymentMethod      String?                @map("payment_method") // upi, bank_transfer, cash
+  status             String                 @default("pending") // pending, submitted, verified, rejected
+  verifiedAt         DateTime?              @map("verified_at")
+  verifiedBy         String?                @map("verified_by") // Admin user ID who verified
+  receiptNo          String?                @map("receipt_no") // पावती क्रमांक
+  receiptUrl         String?                @map("receipt_url") // पावती PDF URL (deprecated - PDFs now generated on-demand)
+  receiptGeneratedAt DateTime?              @map("receipt_generated_at") // Last receipt PDF generation timestamp
+  remarks            String?
+  createdAt          DateTime               @default(now()) @map("created_at")
+  updatedAt          DateTime               @updatedAt @map("updated_at")
+
+  @@index([applicationId])
+  @@index([status])
+  @@map("certificate_payments")
+}
+
+model VillagePaymentConfig {
+  id            String   @id @default(cuid())
+  villageId     String   @unique @map("village_id")
+  village       Village  @relation(fields: [villageId], references: [id])
+  bankName      String?  @map("bank_name")
+  accountNo     String?  @map("account_no")
+  ifscCode      String?  @map("ifsc_code")
+  accountHolder String?  @map("account_holder")
+  upiId         String?  @map("upi_id")
+  qrCodeUrl     String?  @map("qr_code_url")
+  instructions  String?
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("village_payment_configs")
+}
+
+// ---- Platform Subscription (GPMH → Village annual plan) ----
+
+model VillageSubscription {
+  id            String    @id @default(cuid())
+  villageId     String    @unique @map("village_id")
+  village       Village   @relation(fields: [villageId], references: [id], onDelete: Cascade)
+  plan          String    @default("annual")
+  startDate     DateTime  @map("start_date")
+  endDate       DateTime  @map("end_date")
+  amount        Float     @default(0)
+  status        String    @default("active") // active | expired | cancelled
+  receiptNo     String?   @map("receipt_no")
+  paymentMethod String?   @map("payment_method") // cash | upi | bank_transfer | cheque
+  paidAt        DateTime? @map("paid_at")
+  reminderSentAt DateTime? @map("reminder_sent_at")
+  remarks       String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([endDate])
+  @@map("village_subscriptions")
+}
+
+model Complaint {
+  id          String    @id @default(cuid())
+  villageId   String    @map("village_id")
+  village     Village   @relation(fields: [villageId], references: [id])
+  name        String
+  contact     String
+  category    String    // road | water | electricity | sanitation | corruption | other
+  description String
+  imageUrl    String?   @map("image_url")
+  status      String    @default("pending") // pending | in_progress | resolved | rejected
+  response    String?
+  respondedAt DateTime? @map("responded_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([status])
+  @@map("complaints")
+}
+
+// ---- House Tax / Water Tax Payments ----
+model TaxPayment {
+  id            String    @id @default(cuid())
+  villageId     String    @map("village_id")
+  village       Village   @relation(fields: [villageId], references: [id])
+  // Taxpayer info
+  name          String                          // मालक / रहिवाशाचे नाव
+  contact       String                          // मोबाईल नंबर
+  address       String                          // पत्ता / घर क्रमांक
+  // Tax details
+  taxType       String    @map("tax_type")      // house | water | other
+  amount        Float                           // रक्कम (₹)
+  year          String                          // e.g. "2024-25"
+  // Payment proof
+  utrNumber     String?   @map("utr_number")    // UTR / Transaction ID
+  screenshotUrl String?   @map("screenshot_url")
+  paymentMethod String?   @map("payment_method") // upi | online | cash | cheque
+  // Admin actions
+  status        String    @default("pending")   // pending | verified | rejected
+  adminNote     String?   @map("admin_note")
+  verifiedAt    DateTime? @map("verified_at")
+  receiptNo     String?   @map("receipt_no")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([villageId])
+  @@index([status])
+  @@index([taxType])
+  @@index([createdAt])
+  @@map("tax_payments")
+}

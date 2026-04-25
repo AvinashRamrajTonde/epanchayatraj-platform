@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="mr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f97316" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="माझी ग्रामपंचायत" />
+    <title>frontend</title>
+    <style>
+      /* Hide Google Translate default widget & banner */
+      .goog-te-banner-frame, #goog-gt-tt, .goog-te-balloon-frame,
+      .skiptranslate { display: none !important; }
+      body { top: 0 !important; }
+      .goog-text-highlight { background: none !important; box-shadow: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- Hidden Google Translate widget -->
+    <div id="google_translate_element" style="display:none"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'mr',
+          includedLanguages: 'mr,en',
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+    </script>
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
+  </body>
+</html>

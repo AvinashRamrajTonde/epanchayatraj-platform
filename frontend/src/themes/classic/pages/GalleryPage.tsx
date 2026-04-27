@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { publicService, type GalleryImage } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
+import { getYouTubeId, getYouTubeThumbnail, getYouTubeEmbedUrl } from "../../../utils/youtube";
 import SeoHead from "../components/SeoHead";
 import SectionHero from "../components/SectionHero";
 import { StaggerContainer, StaggerItem } from "../components/AnimatedSection";
@@ -108,32 +109,40 @@ export default function GalleryPage() {
             </div>
           ) : (
             <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filtered.map((img, idx) => (
-                <StaggerItem
-                  key={img.id}
-                  className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer border border-gray-100"
-                  onClick={() => openLightbox(idx)}
-                >
-                  <img
-                    src={resolveUrl(img.imageUrl)}
-                    alt={img.title || ''}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
-                    <div>
-                      <p className="text-white text-sm font-medium leading-tight">
-                        {img.title}
-                      </p>
-                      {img.caption && (
-                        <p className="text-white/70 text-xs mt-0.5">
-                          {img.caption}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </StaggerItem>
-              ))}
+              {filtered.map((img, idx) => {
+                const ytId = img.videoUrl ? getYouTubeId(img.videoUrl) : null;
+                const thumb = ytId ? getYouTubeThumbnail(ytId) : img.imageUrl ? resolveUrl(img.imageUrl) : null;
+                return (
+                  <StaggerItem
+                    key={img.id}
+                    className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer border border-gray-100"
+                    onClick={() => openLightbox(idx)}
+                  >
+                    {thumb && (
+                      <img
+                        src={thumb}
+                        alt={img.title || ''}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    )}
+                    {ytId ? (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="bg-red-600 rounded-full w-12 h-12 flex items-center justify-center shadow-lg opacity-85 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                          <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                        <div>
+                          <p className="text-white text-sm font-medium leading-tight">{img.title}</p>
+                          {img.caption && <p className="text-white/70 text-xs mt-0.5">{img.caption}</p>}
+                        </div>
+                      </div>
+                    )}
+                  </StaggerItem>
+                );
+              })}
             </StaggerContainer>
           )}
         </div>
@@ -173,11 +182,29 @@ export default function GalleryPage() {
             className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={resolveUrl(filtered[lightbox].imageUrl)}
-              alt={filtered[lightbox].title || ''}
-              className="max-w-full max-h-[75vh] object-contain rounded"
-            />
+            {(() => {
+              const cur = filtered[lightbox];
+              const ytId = cur.videoUrl ? getYouTubeId(cur.videoUrl) : null;
+              return ytId ? (
+                <div className="w-[90vw] sm:w-[70vw] max-w-3xl">
+                  <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                    <iframe
+                      src={getYouTubeEmbedUrl(ytId, true)}
+                      title={cur.title || "YouTube Video"}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={resolveUrl(cur.imageUrl)}
+                  alt={cur.title || ''}
+                  className="max-w-full max-h-[75vh] object-contain rounded"
+                />
+              );
+            })()}
             <div className="text-center mt-3">
               <p className="text-white font-medium">
                 {filtered[lightbox].title}

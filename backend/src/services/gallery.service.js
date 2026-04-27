@@ -7,7 +7,8 @@ export const galleryService = {
       data: {
         villageId,
         title: data.title || null,
-        imageUrl: data.imageUrl,
+        imageUrl: data.imageUrl || null,
+        videoUrl: data.videoUrl || null,
         caption: data.caption || null,
         category: data.category || 'general',
         sortOrder: data.sortOrder || 0,

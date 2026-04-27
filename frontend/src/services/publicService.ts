@@ -92,7 +92,8 @@ export interface GalleryImage {
   id: string;
   villageId: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
+  videoUrl: string | null;
   caption: string | null;
   category: string;
   sortOrder: number;

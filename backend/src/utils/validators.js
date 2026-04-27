@@ -97,7 +97,8 @@ export const updateNoticeSchema = Joi.object({
 
 export const createGalleryImageSchema = Joi.object({
   title: Joi.string().max(200).allow('', null).optional(),
-  imageUrl: imageUrl().required(),
+  imageUrl: imageUrl().allow('', null).optional(),
+  videoUrl: Joi.string().uri().max(500).allow('', null).optional(),
   caption: Joi.string().max(500).allow('', null).optional(),
   sortOrder: Joi.number().integer().min(0).optional(),
 });
@@ -247,7 +248,8 @@ export const updateContactSubmissionStatusSchema = Joi.object({
 
 export const createGalleryImageSchemaExtended = Joi.object({
   title: Joi.string().max(200).allow('', null).optional(),
-  imageUrl: imageUrl().required(),
+  imageUrl: imageUrl().allow('', null).optional(),
+  videoUrl: Joi.string().uri().max(500).allow('', null).optional(),
   caption: Joi.string().max(500).allow('', null).optional(),
   category: Joi.string().max(50).optional(),
   sortOrder: Joi.number().integer().min(0).optional(),

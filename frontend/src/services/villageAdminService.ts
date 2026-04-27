@@ -39,7 +39,8 @@ export interface GalleryImage {
   id: string;
   villageId: string;
   title: string | null;
-  imageUrl: string;
+  imageUrl: string | null;
+  videoUrl: string | null;
   caption: string | null;
   category: string;
   sortOrder: number;
@@ -208,7 +209,8 @@ export const villageAdminService = {
 
   async createGalleryImage(data: {
     title?: string;
-    imageUrl: string;
+    imageUrl?: string;
+    videoUrl?: string;
     caption?: string;
     category?: string;
     sortOrder?: number;

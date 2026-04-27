@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import type { Program } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
-import AnimatedSection, { StaggerContainer, StaggerItem } from "../components/AnimatedSection";
+import { StaggerContainer, StaggerItem } from "../components/AnimatedSection";
+import SectionHeading from "../components/SectionHeading";
 
 interface Props {
   programs: Program[];
@@ -88,24 +89,23 @@ export default function ProgramsPreview({ programs }: Props) {
   return (
     <section className="py-16 bg-gradient-to-br from-green-50 to-blue-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4">
-        <AnimatedSection animation="fadeUp">
-          <div className="flex items-center justify-between mb-10">
-            <div>
-              <span className="text-green-600 font-semibold text-sm uppercase tracking-wide">
-                विकास कामे
-              </span>
-              <h2 className="text-3xl font-bold text-gray-800 mt-2">
-                गावातील विकास प्रकल्प
-              </h2>
-            </div>
+        <SectionHeading
+          badge="🏗️ विकास कामे"
+          title="गावातील विकास प्रकल्प"
+          align="center"
+          badgeColor="text-green-600 bg-green-50 border-green-200"
+          rightAction={
             <Link
               to="/programs"
-              className="text-green-600 font-medium hover:text-green-700 flex items-center gap-1"
+              className="text-orange-600 font-medium hover:text-orange-700 flex items-center gap-1 text-sm sm:text-base"
             >
-              सर्व पहा →
+              सर्व पहा
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
-          </div>
-        </AnimatedSection>
+          }
+        />
 
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={0.12}>
           {programs.map((program) => {

@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import type { GalleryImage } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
+import { getYouTubeId, getYouTubeThumbnail, getYouTubeEmbedUrl } from "../../../utils/youtube";
 import SectionHeading from "../components/SectionHeading";
 
 interface Props {
@@ -69,6 +70,7 @@ export default function GalleryPreview({ images }: Props) {
         <SectionHeading
           badge="📸 फोटो गॅलरी"
           title="गावाचे क्षणचित्रे"
+          align="center"
           badgeColor="text-purple-600 bg-purple-50 border-purple-200"
           rightAction={
             <Link
@@ -106,24 +108,36 @@ export default function GalleryPreview({ images }: Props) {
                 onClick={() => openLightbox(idx)}
                 className="flex-shrink-0 w-[200px] sm:w-[240px] md:w-[260px] lg:w-[280px] group cursor-pointer"
               >
-                <div className="relative rounded-xl overflow-hidden aspect-square shadow-sm hover:shadow-xl transition-all duration-300">
-                  <img
-                    src={resolveUrl(img.imageUrl)}
-                    alt={img.title || img.caption || "गॅलरी"}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-                    <div className="text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                      {img.title && <p className="font-medium text-sm">{img.title}</p>}
-                      {img.caption && <p className="text-xs opacity-80">{img.caption}</p>}
+                {(() => {
+                  const ytId = img.videoUrl ? getYouTubeId(img.videoUrl) : null;
+                  const thumb = ytId ? getYouTubeThumbnail(ytId) : img.imageUrl ? resolveUrl(img.imageUrl) : null;
+                  return (
+                    <div className="relative rounded-xl overflow-hidden aspect-square shadow-sm hover:shadow-xl transition-all duration-300">
+                      {thumb && (
+                        <img
+                          src={thumb}
+                          alt={img.title || img.caption || "गॅलरी"}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          loading="lazy"
+                        />
+                      )}
+                      {ytId ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-red-600 rounded-full w-12 h-12 flex items-center justify-center shadow-lg opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+                          <div className="text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                            {img.title && <p className="font-medium text-sm">{img.title}</p>}
+                            {img.caption && <p className="text-xs opacity-80">{img.caption}</p>}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                  {/* Zoom icon */}
-                  <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-sm">
-                    🔍
-                  </div>
-                </div>
+                  );
+                })()}
               </div>
             ))}
           </div>
@@ -178,11 +192,29 @@ export default function GalleryPreview({ images }: Props) {
             className="max-w-[92vw] sm:max-w-[85vw] max-h-[90vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={resolveUrl(images[lightbox].imageUrl)}
-              alt={images[lightbox].title || ""}
-              className="max-w-full max-h-[78vh] object-contain rounded-lg"
-            />
+            {(() => {
+              const cur = images[lightbox];
+              const ytId = cur.videoUrl ? getYouTubeId(cur.videoUrl) : null;
+              return ytId ? (
+                <div className="w-[90vw] sm:w-[70vw] max-w-3xl">
+                  <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                    <iframe
+                      src={getYouTubeEmbedUrl(ytId, true)}
+                      title={cur.title || "YouTube Video"}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                </div>
+              ) : (
+                <img
+                  src={resolveUrl(cur.imageUrl)}
+                  alt={cur.title || ""}
+                  className="max-w-full max-h-[78vh] object-contain rounded-lg"
+                />
+              );
+            })()}
             <div className="text-center mt-3 px-4">
               {images[lightbox].title && (
                 <p className="text-white font-medium text-sm sm:text-base">{images[lightbox].title}</p>

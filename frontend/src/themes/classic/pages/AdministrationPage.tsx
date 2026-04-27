@@ -43,7 +43,7 @@ export default function AdministrationPage() {
       ) : members.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <span className="text-5xl block mb-4">👥</span>
-          सदस्य माहिती उपलब्ध नाही
+          लोकप्रतिनिधी / पदाधिकारी / सदस्य माहिती उपलब्ध नाही
         </div>
       ) : (
         <>

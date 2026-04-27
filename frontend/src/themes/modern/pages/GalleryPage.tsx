@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { publicService, type GalleryImage } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
+import { getYouTubeId, getYouTubeThumbnail, getYouTubeEmbedUrl } from "../../../utils/youtube";
 
 export default function GalleryPage() {
   const [images, setImages] = useState<GalleryImage[]>([]);
@@ -37,30 +38,44 @@ export default function GalleryPage() {
             </div>
           ) : (
             <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-              {images.map((img, i) => (
-                <div
-                  key={img.id}
-                  onClick={() => setLightbox(i)}
-                  className="break-inside-avoid rounded-xl overflow-hidden cursor-pointer group"
-                >
-                  <div className="relative">
-                    <img
-                      src={resolveUrl(img.imageUrl)}
-                      alt={img.title || img.caption || ""}
-                      className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors flex items-end">
-                      {(img.title || img.caption) && (
-                        <div className="p-3 opacity-0 group-hover:opacity-100 transition-opacity w-full">
-                          {img.title && <p className="text-white text-sm font-semibold">{img.title}</p>}
-                          {img.caption && <p className="text-white/70 text-xs">{img.caption}</p>}
+              {images.map((img, i) => {
+                const ytId = img.videoUrl ? getYouTubeId(img.videoUrl) : null;
+                const thumb = ytId ? getYouTubeThumbnail(ytId) : img.imageUrl ? resolveUrl(img.imageUrl) : null;
+                return (
+                  <div
+                    key={img.id}
+                    onClick={() => setLightbox(i)}
+                    className="break-inside-avoid rounded-xl overflow-hidden cursor-pointer group"
+                  >
+                    <div className="relative">
+                      {thumb && (
+                        <img
+                          src={thumb}
+                          alt={img.title || img.caption || ""}
+                          className="w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          loading="lazy"
+                        />
+                      )}
+                      {ytId ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="bg-red-600 rounded-full w-12 h-12 flex items-center justify-center shadow-lg opacity-85 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                            <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/30 transition-colors flex items-end">
+                          {(img.title || img.caption) && (
+                            <div className="p-3 opacity-0 group-hover:opacity-100 transition-opacity w-full">
+                              {img.title && <p className="text-white text-sm font-semibold">{img.title}</p>}
+                              {img.caption && <p className="text-white/70 text-xs">{img.caption}</p>}
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -82,12 +97,30 @@ export default function GalleryPage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
             </button>
           )}
-          <img
-            src={resolveUrl(images[lightbox].imageUrl)}
-            alt={images[lightbox].title || ""}
-            className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()}
-          />
+          {(() => {
+            const cur = images[lightbox];
+            const ytId = cur.videoUrl ? getYouTubeId(cur.videoUrl) : null;
+            return ytId ? (
+              <div className="w-[90vw] sm:w-[70vw] max-w-3xl" onClick={(e) => e.stopPropagation()}>
+                <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                  <iframe
+                    src={getYouTubeEmbedUrl(ytId, true)}
+                    title={cur.title || "YouTube Video"}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              </div>
+            ) : (
+              <img
+                src={resolveUrl(cur.imageUrl)}
+                alt={cur.title || ""}
+                className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg"
+                onClick={(e) => e.stopPropagation()}
+              />
+            );
+          })()}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
             {images[lightbox].title && <p className="text-white text-sm font-medium">{images[lightbox].title}</p>}
             <p className="text-white/50 text-xs mt-1">{lightbox + 1} / {images.length}</p>

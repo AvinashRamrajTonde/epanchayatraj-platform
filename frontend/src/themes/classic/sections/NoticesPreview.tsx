@@ -60,6 +60,7 @@ export default function NoticesPreview({ notices }: Props) {
         <SectionHeading
           badge="📋 सूचना फलक"
           title="ताज्या सूचना"
+          align="center"
           badgeColor="text-blue-600 bg-blue-50 border-blue-200"
           rightAction={
             <Link

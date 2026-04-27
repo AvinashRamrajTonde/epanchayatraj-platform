@@ -12,8 +12,10 @@ const STATUS_MAP: Record<string, { label: string; labelMr: string; bg: string; d
 };
 
 function getBackendBase() {
-  const hostname = window.location.hostname;
-  return `http://${hostname}:5000`;
+  const port = window.location.port;
+  return !port || port === "80" || port === "443"
+    ? window.location.origin
+    : `http://${window.location.hostname}:5000`;
 }
 
 export default function ApplicationDetail() {

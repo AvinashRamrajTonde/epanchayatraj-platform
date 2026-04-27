@@ -29,6 +29,11 @@ export default function Members() {
     leader: "नेते / पदाधिकारी",
     member: "सदस्य",
     staff: "कर्मचारी",
+    computer_operator: "संगणक परिचालक",
+    pump_operator: "Pump Operator / पाणीपुरवठा कर्मचारी",
+    safai_kamgar: "Safai Kamgar / सफाई कामगार",
+    peon: "Peon / शिपाई",
+    other_staff: "इतर कर्मचारी",
   };
 
   const emptyForm = {
@@ -292,7 +297,7 @@ export default function Members() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="type">प्रकार</Label>
+              <Label htmlFor="type">पद</Label>
               <select
                 id="type"
                 name="type"
@@ -300,13 +305,22 @@ export default function Members() {
                 onChange={(e) => setForm((prev) => ({ ...prev, type: e.target.value }))}
                 className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:border-brand-300 focus:outline-none focus:ring focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
               >
-                <option value="sarpanch">सरपंच</option>
-                <option value="upsarpanch">उपसरपंच</option>
-                <option value="grampanchayat_adhikari">ग्रामपंचायत अधिकारी</option>
-                <option value="gramsevak">ग्रामसेवक (जुने)</option>
-                <option value="leader">नेते / पदाधिकारी</option>
-                <option value="member">सदस्य</option>
-                <option value="staff">कर्मचारी</option>
+                <optgroup label="── पदाधिकारी ──">
+                  <option value="sarpanch">सरपंच</option>
+                  <option value="upsarpanch">उपसरपंच</option>
+                  <option value="grampanchayat_adhikari">ग्रामपंचायत अधिकारी</option>
+                  <option value="gramsevak">ग्रामसेवक</option>
+                  <option value="leader">नेते / पदाधिकारी</option>
+                  <option value="member">सदस्य</option>
+                </optgroup>
+                <optgroup label="── कर्मचारी ──">
+                  <option value="computer_operator">Computer Operator</option>
+                  <option value="pump_operator">Pump Operator / पाणीपुरवठा कर्मचारी</option>
+                  <option value="safai_kamgar">Safai Kamgar / सफाई कामगार</option>
+                  <option value="peon">Peon / शिपाई</option>
+                  <option value="staff">कर्मचारी (सामान्य)</option>
+                  <option value="other_staff">इतर कर्मचारी</option>
+                </optgroup>
               </select>
             </div>
           </div>

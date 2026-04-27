@@ -19,10 +19,11 @@ export default function AdministrationPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const leaders = members.filter((m) =>
-    ["sarpanch", "upsarpanch", "gramsevak", "leader"].includes(m.type)
-  );
-  const staff = members.filter((m) => m.type === "staff");
+  const LEADER_TYPES = ["sarpanch", "upsarpanch", "grampanchayat_adhikari", "gramsevak", "leader"];
+  const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff"];
+
+  const leaders = members.filter((m) => LEADER_TYPES.includes(m.type));
+  const staff = members.filter((m) => STAFF_TYPES.includes(m.type));
   const teamMembers = members.filter((m) => m.type === "member");
 
   return (

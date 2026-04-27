@@ -193,9 +193,12 @@ const ImageUpload: FC<ImageUploadProps> = ({
   // Backend URL to full absolute URL
   const resolveUrl = (url: string) => {
     if (url.startsWith("http")) return url;
-    // Relative URL from backend - prepend backend origin
-    const hostname = window.location.hostname;
-    return `http://${hostname}:5000${url}`;
+    const port = window.location.port;
+    const base =
+      !port || port === "80" || port === "443"
+        ? window.location.origin
+        : `http://${window.location.hostname}:5000`;
+    return `${base}${url}`;
   };
 
   return (

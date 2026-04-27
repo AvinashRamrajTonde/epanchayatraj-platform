@@ -2,28 +2,62 @@ import { useEffect, useState } from "react";
 import { publicService, type Member } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
 
+const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff"];
+
 const TYPES = [
   { value: "", label: "सर्व" },
   { value: "sarpanch", label: "सरपंच" },
   { value: "upsarpanch", label: "उपसरपंच" },
-  { value: "gramsevak", label: "ग्रामपंचायत अधिकारी" },
+  { value: "grampanchayat_adhikari", label: "ग्रामपंचायत अधिकारी" },
+  { value: "gramsevak", label: "ग्रामसेवक" },
   { value: "leader", label: "पदाधिकारी" },
   { value: "member", label: "सदस्य" },
   { value: "staff", label: "कर्मचारी" },
 ];
+
+const TYPE_LABEL: Record<string, string> = {
+  sarpanch: "सरपंच",
+  upsarpanch: "उपसरपंच",
+  grampanchayat_adhikari: "ग्रामपंचायत अधिकारी",
+  gramsevak: "ग्रामसेवक",
+  leader: "पदाधिकारी",
+  member: "सदस्य",
+  staff: "कर्मचारी",
+  computer_operator: "संगणक परिचालक",
+  pump_operator: "पाणीपुरवठा कर्मचारी",
+  safai_kamgar: "सफाई कामगार",
+  peon: "शिपाई",
+  other_staff: "इतर कर्मचारी",
+};
 
 export default function AdministrationPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const [allMembers, setAllMembers] = useState<Member[]>([]);
+
   useEffect(() => {
     publicService
-      .getMembers(filter || undefined)
-      .then(setMembers)
+      .getMembers()
+      .then((data) => {
+        setAllMembers(data);
+        setMembers(data);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [filter]);
+  }, []);
+
+  useEffect(() => {
+    if (!filter) {
+      setMembers(allMembers);
+    } else if (filter === "staff") {
+      // Match all staff sub-types
+      setMembers(allMembers.filter((m) => STAFF_TYPES.includes(m.type)));
+    } else {
+      setMembers(allMembers.filter((m) => m.type === filter));
+    }
+  }, [filter, allMembers]);
 
   return (
     <>
@@ -72,7 +106,7 @@ export default function AdministrationPage() {
                   </div>
                   <h3 className="font-bold text-slate-800">{m.name}</h3>
                   <p className="text-sm text-teal-600 mt-0.5">{m.designation}</p>
-                  {m.type && <span className="inline-block bg-slate-100 text-slate-500 text-xs px-2 py-0.5 rounded mt-2">{TYPES.find((t) => t.value === m.type)?.label || m.type}</span>}
+                  {m.type && <span className="inline-block bg-slate-100 text-slate-500 text-xs px-2 py-0.5 rounded mt-2">{TYPE_LABEL[m.type] || m.type}</span>}
                   {m.phone && <p className="text-xs text-slate-400 mt-2">{m.phone}</p>}
                   {m.bio && <p className="text-xs text-slate-500 mt-2 line-clamp-2">{m.bio}</p>}
                 </div>

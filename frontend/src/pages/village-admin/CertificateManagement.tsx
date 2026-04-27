@@ -7,8 +7,10 @@ import { getCertificateFields, type FieldDef } from "../../utils/certificateFiel
 
 /* ─── Helpers ──────────────────────────────────────────── */
 function getBackendBase() {
-  const h = window.location.hostname;
-  return `http://${h}:5000`;
+  const port = window.location.port;
+  return !port || port === "80" || port === "443"
+    ? window.location.origin
+    : `http://${window.location.hostname}:5000`;
 }
 
 const STATUS_LABELS: Record<string, { label: string; bg: string; dot: string }> = {

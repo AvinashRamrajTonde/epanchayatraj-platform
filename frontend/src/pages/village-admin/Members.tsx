@@ -314,7 +314,7 @@ export default function Members() {
                   <option value="member">सदस्य</option>
                 </optgroup>
                 <optgroup label="── कर्मचारी ──">
-                  <option value="computer_operator">Computer Operator</option>
+                  <option value="computer_operator">संगणक परिचालक</option>
                   <option value="pump_operator">Pump Operator / पाणीपुरवठा कर्मचारी</option>
                   <option value="safai_kamgar">Safai Kamgar / सफाई कामगार</option>
                   <option value="peon">Peon / शिपाई</option>

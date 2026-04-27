@@ -135,7 +135,7 @@ export const updateVillageSettingsSchema = Joi.object({
 export const createMemberSchemaExtended = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   designation: Joi.string().min(2).max(100).required(),
-  type: Joi.string().valid('sarpanch', 'upsarpanch', 'gramsevak', 'grampanchayat_adhikari', 'leader', 'member', 'staff').optional(),
+  type: Joi.string().valid('sarpanch', 'upsarpanch', 'gramsevak', 'grampanchayat_adhikari', 'leader', 'member', 'staff', 'computer_operator', 'pump_operator', 'safai_kamgar', 'peon', 'other_staff').optional(),
   phone: Joi.string().max(15).allow('', null).optional(),
   email: Joi.string().email().allow('', null).optional(),
   photoUrl: imageUrl().allow('', null).optional(),
@@ -147,7 +147,7 @@ export const createMemberSchemaExtended = Joi.object({
 export const updateMemberSchemaExtended = Joi.object({
   name: Joi.string().min(2).max(100).optional(),
   designation: Joi.string().min(2).max(100).optional(),
-  type: Joi.string().valid('sarpanch', 'upsarpanch', 'gramsevak', 'grampanchayat_adhikari', 'leader', 'member', 'staff').optional(),
+  type: Joi.string().valid('sarpanch', 'upsarpanch', 'gramsevak', 'grampanchayat_adhikari', 'leader', 'member', 'staff', 'computer_operator', 'pump_operator', 'safai_kamgar', 'peon', 'other_staff').optional(),
   phone: Joi.string().max(15).allow('', null).optional(),
   email: Joi.string().email().allow('', null).optional(),
   photoUrl: imageUrl().allow('', null).optional(),

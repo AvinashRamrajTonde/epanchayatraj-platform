@@ -288,23 +288,23 @@ const DEMO_SECTIONS = [
 
 const TESTIMONIALS = [
   {
-    name: "सरपंच राजेश पाटील",
-    role: "सरपंच, इगतपुरी ग्रामपंचायत",
-    text: "ePanchayatRaj ने आमच्या ग्रामपंचायतीचे काम पूर्णपणे बदलले. आता नागरिकांना कार्यालयात यावे लागत नाही. सर्व सेवा मोबाइलवर मिळतात.",
-    stars: 5,
+    // name: "सरपंच राजेश पाटील",
+    // role: "सरपंच, इगतपुरी ग्रामपंचायत",
+    // text: "ePanchayatRaj ने आमच्या ग्रामपंचायतीचे काम पूर्णपणे बदलले. आता नागरिकांना कार्यालयात यावे लागत नाही. सर्व सेवा मोबाइलवर मिळतात.",
+    // stars: 5,
   },
-  {
-    name: "सुनीता वाघमारे",
-    role: "ग्रामसेवक, कसारा ग्राम पंचायत",
-    text: "१५ दिवस लागणारी प्रमाणपत्र प्रक्रिया आता २ तासांत होते. QR सत्यापनामुळे संस्थांना आत्मविश्वास मिळतो.",
-    stars: 5,
-  },
-  {
-    name: "प्रकाश भोईर",
-    role: "ग्राम सेवक, भंडारदरा",
-    text: "डॅशबोर्डवर प्रलंबित अर्ज, आर्थिक स्थिती आणि तक्रार निराकरण एका दृष्टिक्षेपात दिसते.",
-    stars: 5,
-  },
+  // {
+  //   name: "सुनीता वाघमारे",
+  //   role: "ग्रामसेवक, कसारा ग्राम पंचायत",
+  //   text: "१५ दिवस लागणारी प्रमाणपत्र प्रक्रिया आता २ तासांत होते. QR सत्यापनामुळे संस्थांना आत्मविश्वास मिळतो.",
+  //   stars: 5,
+  // },
+  // {
+  //   name: "प्रकाश भोईर",
+  //   role: "ग्राम सेवक, भंडारदरा",
+  //   text: "डॅशबोर्डवर प्रलंबित अर्ज, आर्थिक स्थिती आणि तक्रार निराकरण एका दृष्टिक्षेपात दिसते.",
+  //   stars: 5,
+  // },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -359,7 +359,7 @@ export default function LandingPage() {
                 ePanchayatRaj
               </span>
               <p className={`text-[10px] leading-none font-medium ${scrolled ? "text-gray-500" : "text-white/80"}`}>
-                ePanchayatraj.in
+                ePanchayatraj.com
               </p>
             </div>
           </a>
@@ -383,7 +383,7 @@ export default function LandingPage() {
 
           <div className="hidden lg:flex items-center gap-4">
             <a
-              href="https://admin.epanchayatraj.in"
+              href="https://admin.epanchayatraj.com"
               className="text-sm font-medium text-orange-600 hover:text-orange-700 border border-orange-300 px-4 py-2 rounded-lg hover:bg-orange-50 transition-all"
             >
               अ‍ॅडमिन लॉगिन
@@ -727,7 +727,7 @@ export default function LandingPage() {
                       <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
                       <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
                       <div className="ml-2 flex-1 bg-white/10 rounded px-3 py-0.5 text-white/50 text-xs font-mono truncate">
-                        epanchayatraj.in/{d.badge.toLowerCase().replace(" ", "-")}
+                        epanchayatraj.com/{d.badge.toLowerCase().replace(" ", "-")}
                       </div>
                     </div>
                     <div className="flex flex-col items-center gap-4 mt-4">
@@ -815,7 +815,7 @@ export default function LandingPage() {
               आमच्याशी संपर्क करा <ArrowRight size={18} />
             </button>
             <a
-              href="https://admin.epanchayatraj.in"
+              href="https://admin.epanchayatraj.com"
               className="border-2 border-white/60 text-white font-semibold px-8 py-4 rounded-xl hover:bg-white/10 transition-all flex items-center justify-center gap-2"
             >
               अ‍ॅडमिन लॉगिन
@@ -851,7 +851,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                       <h3 className="font-extrabold text-xl">ePanchayatRaj</h3>
-                      <p className="text-gray-400 text-sm">ePanchayatraj.in</p>
+                      <p className="text-gray-400 text-sm">ePanchayatraj.com</p>
                     </div>
                   </div>
                   <p className="text-gray-300 text-sm leading-relaxed mb-6">
@@ -897,12 +897,12 @@ export default function LandingPage() {
                       </div>
                       <div>
                         <p className="text-white/60 text-xs mb-0.5">ईमेल</p>
-                        <a href="mailto:info@epanchayatraj.in" className="text-white text-sm hover:text-blue-400 transition-colors">
-                          info@epanchayatraj.in
+                        <a href="mailto:info@epanchayatraj.com" className="text-white text-sm hover:text-blue-400 transition-colors">
+                          info@epanchayatraj.com
                         </a>
                         <br />
-                        <a href="mailto:support@epanchayatraj.in" className="text-white text-sm hover:text-blue-400 transition-colors">
-                          support@epanchayatraj.in
+                        <a href="mailto:support@epanchayatraj.com" className="text-white text-sm hover:text-blue-400 transition-colors">
+                          support@epanchayatraj.com
                         </a>
                       </div>
                     </div>
@@ -1056,7 +1056,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <p className="font-extrabold text-white text-lg leading-none">ePanchayatRaj</p>
-                  <p className="text-xs text-gray-500">ePanchayatraj.in</p>
+                  <p className="text-xs text-gray-500">ePanchayatraj.com</p>
                 </div>
               </div>
               <p className="text-sm leading-relaxed mb-4">
@@ -1118,8 +1118,8 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Mail size={15} className="text-blue-400 flex-shrink-0" />
-                  <a href="mailto:info@epanchayatraj.in" className="hover:text-white transition-colors">
-                    info@epanchayatraj.in
+                  <a href="mailto:info@epanchayatraj.com" className="hover:text-white transition-colors">
+                    info@epanchayatraj.com
                   </a>
                 </li>
               </ul>

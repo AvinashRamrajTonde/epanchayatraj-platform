@@ -700,7 +700,94 @@ export default function LandingPage() {
       </section>
 
       {/* ── Demo Previews ──────────────────────────────────────────── */}
-    
+      <section id="demo" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FadeIn className="text-center mb-16">
+            <span className="inline-block bg-indigo-100 text-indigo-600 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+              लाइव्ह डेमो
+            </span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+              प्रत्यक्ष पाहा, स्वतः अनुभवा
+            </h2>
+            <p className="max-w-2xl mx-auto text-gray-500 text-lg">
+              ePanchayatRaj च्या चार मुख्य विभागांचे लाइव्ह डेमो खाली दिले आहेत.
+              प्रत्येक लिंकवर क्लिक करून थेट प्लॅटफॉर्म अनुभवा.
+            </p>
+          </FadeIn>
+
+          <div className="grid sm:grid-cols-2 gap-8">
+            {DEMO_SECTIONS.map((d, i) => (
+              <FadeIn key={d.title} delay={(i % 2) * 0.1}>
+                <div className="group rounded-2xl border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
+                  {/* Preview window */}
+                  <div className={`relative bg-gradient-to-br ${d.previewBg} h-52 flex items-center justify-center overflow-hidden`}>
+                    {/* Fake browser chrome */}
+                    <div className="absolute top-0 inset-x-0 bg-black/30 backdrop-blur-sm h-8 flex items-center px-4 gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-red-400/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-yellow-400/80" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-green-400/80" />
+                      <div className="ml-2 flex-1 bg-white/10 rounded px-3 py-0.5 text-white/50 text-xs font-mono truncate">
+                        epanchayatraj.com/{d.badge.toLowerCase().replace(" ", "-")}
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-4 mt-4">
+                      <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-white/80 group-hover:scale-110 transition-transform">
+                        {d.icon}
+                      </div>
+                      <div className="flex flex-wrap justify-center gap-2">
+                        {d.screens.map((s) => (
+                          <span key={s} className="bg-white/10 border border-white/20 text-white/70 text-xs px-2.5 py-1 rounded-full">
+                            {s}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="w-14 h-14 rounded-full bg-white/20 border-2 border-white/60 flex items-center justify-center">
+                        <Play size={24} className="text-white ml-1" />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Card body */}
+                  <div className="p-6 bg-white">
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${d.badgeColor} mb-2 inline-block`}>
+                          {d.badge}
+                        </span>
+                        <h3 className="font-bold text-gray-900 text-lg leading-tight">{d.title}</h3>
+                      </div>
+                    </div>
+                    <p className="text-gray-500 text-sm leading-relaxed mb-5">{d.desc}</p>
+                    <a
+                      href={d.demoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-green-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all"
+                    >
+                      लाइव्ह डेमो पाहा <ExternalLink size={15} />
+                    </a>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+
+          <FadeIn delay={0.3}>
+            <div className="mt-10 text-center bg-indigo-50 border border-indigo-100 rounded-2xl py-6 px-8">
+              <p className="text-indigo-700 text-sm font-medium">
+                📱 मोबाइल अ‍ॅप डेमो लवकरच येत आहे — सूचित राहण्यासाठी
+                <button
+                  onClick={() => scrollTo("#contact")}
+                  className="underline underline-offset-2 font-bold ml-1 hover:text-indigo-900 transition-colors"
+                >
+                  आत्ताच नोंदणी करा
+                </button>
+              </p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
 
       {/* ── CTA Banner ─────────────────────────────────────────────── */}
       <section className="relative py-20 overflow-hidden bg-gradient-to-r from-orange-600 via-orange-500 to-green-600">
@@ -717,7 +804,7 @@ export default function LandingPage() {
             तुमची ग्रामपंचायत डिजिटल करायला तयार आहात?
           </h2>
           <p className="text-orange-100 text-lg mb-8">
-            आधीच २००+ गावे ePanchayatRaj वापरत आहेत. —
+            आधीच २००+ गावे ePanchayatRaj वापरत आहेत. कोणतेही हार्डवेअर नको —
             फक्त इंटरनेट कनेक्शन पुरेसे.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -779,12 +866,12 @@ export default function LandingPage() {
                         <MapPin size={16} className="text-orange-400" />
                       </div>
                       <div>
-                        {/* <p className="text-white/60 text-xs mb-0.5">पत्ता</p>
+                        <p className="text-white/60 text-xs mb-0.5">पत्ता</p>
                         <p className="text-white text-sm">
                           ऑफिस नं. १२, पुणे–नाशिक महामार्ग,<br />
                           इगतपुरी, नाशिक – ४२२४०३,<br />
                           महाराष्ट्र, भारत
-                        </p> */}
+                        </p>
                       </div>
                     </div>
 
@@ -794,12 +881,12 @@ export default function LandingPage() {
                       </div>
                       <div>
                         <p className="text-white/60 text-xs mb-0.5">दूरध्वनी</p>
-                        <a href="tel:+918767671717" className="text-white text-sm hover:text-green-400 transition-colors">
-                          +91 87676 71717
+                        <a href="tel:+919876543210" className="text-white text-sm hover:text-green-400 transition-colors">
+                          +९१ ९८७६५ ४३२१०
                         </a>
                         <br />
-                        <a href="tel:+919284556060" className="text-white text-sm hover:text-green-400 transition-colors">
-                          +91 92845 56060
+                        <a href="tel:+912536543210" className="text-white text-sm hover:text-green-400 transition-colors">
+                          +९१ २५३६ ५४३२१०
                         </a>
                       </div>
                     </div>
@@ -1021,12 +1108,12 @@ export default function LandingPage() {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <MapPin size={15} className="text-orange-400 mt-0.5 flex-shrink-0" />
-                  {/* <span>इगतपुरी, नाशिक – ४२२४०३, महाराष्ट्र</span> */}
+                  <span>इगतपुरी, नाशिक – ४२२४०३, महाराष्ट्र</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone size={15} className="text-green-400 flex-shrink-0" />
-                  <a href="tel:+918767671717" className="hover:text-white transition-colors">
-                    +91 87676 71717
+                  <a href="tel:+919876543210" className="hover:text-white transition-colors">
+                    +९१ ९८७६५ ४३२१०
                   </a>
                 </li>
                 <li className="flex items-center gap-2">

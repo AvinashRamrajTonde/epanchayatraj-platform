@@ -438,12 +438,9 @@ export const getOgPreview = catchAsync(async (req, res) => {
 
   <!-- JSON-LD structured data -->
   <script type="application/ld+json">${JSON.stringify(structuredData)}</script>
-
-  <!-- Redirect human visitors to the React SPA -->
-  <meta http-equiv="refresh" content="0;url=/" />
 </head>
 <body>
-  <p>Redirecting to <a href="${esc(canonicalUrl)}">${esc(title)}</a>…</p>
+  <p><a href="${esc(canonicalUrl)}">${esc(title)}</a></p>
 </body>
 </html>`;
 

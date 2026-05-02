@@ -344,3 +344,162 @@ export const getPublicGlobalSettings = catchAsync(async (req, res) => {
   for (const s of settings) map[s.key] = s.value;
   sendResponse(res, 200, map, 'Global settings retrieved');
 });
+
+// OG/SEO HTML for crawlers (Googlebot, Bingbot, WhatsApp, Facebook, etc.)
+// Returns a fully-rendered HTML page with all meta tags; humans are redirected to the SPA.
+export const getOgPreview = catchAsync(async (req, res) => {
+  const villageId = ensureVillageTenant(req);
+
+  const { name, settings, tehsil } = req.tenant;
+  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
+  const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+  const siteUrl = `${protocol}://${host}`;
+
+  // Try to load custom SEO content saved in the village admin panel
+  const seoContent = await contentService.findBySection(villageId, 'seo').catch(() => null);
+  const seo = seoContent?.content || {};
+
+  // Logo URL
+  const rawLogo = settings?.logoUrl || null;
+  const logoUrl = rawLogo
+    ? (rawLogo.startsWith('http') ? rawLogo : `${siteUrl}${rawLogo}`)
+    : null;
+
+  const tehsilName = tehsil?.name || '';
+  const districtName = tehsil?.district || '';
+  const stateName = tehsil?.state || 'महाराष्ट्र';
+  const locationParts = [tehsilName, districtName].filter(Boolean).join(', ');
+
+  // Title & description — prefer admin-configured values, else auto-generate
+  const title = seo.title
+    ? String(seo.title)
+    : `ग्रामपंचायत ${name}${locationParts ? ` - ${locationParts}` : ''}`;
+  const description = seo.description
+    ? String(seo.description)
+    : `${name} ग्रामपंचायतीची अधिकृत वेबसाईट. ता. ${tehsilName}, जि. ${districtName}, ${stateName}. नागरिक सेवा, शासकीय योजना, सूचना, विकासकामे आणि बरेच काही.`;
+  const keywords = seo.keywords
+    ? String(seo.keywords)
+    : `ग्रामपंचायत ${name}, ${name}, ${tehsilName}, ${districtName}, grampanchayat, maharashtra, village, ${req.tenant.slug || ''}`;
+
+  const canonicalUrl = `${siteUrl}/`;
+
+  // JSON-LD structured data (GovernmentOrganization)
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'GovernmentOrganization',
+    name: `ग्रामपंचायत ${name}`,
+    url: canonicalUrl,
+    logo: logoUrl || undefined,
+    description,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: name,
+      addressRegion: districtName || 'Maharashtra',
+      addressCountry: 'IN',
+    },
+    areaServed: { '@type': 'Place', name },
+    sameAs: [],
+  };
+
+  // Safely encode values for HTML attributes
+  const esc = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const html = `<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(description)}" />
+  <meta name="keywords" content="${esc(keywords)}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="${esc(canonicalUrl)}" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${esc(canonicalUrl)}" />
+  <meta property="og:title" content="${esc(title)}" />
+  <meta property="og:description" content="${esc(description)}" />
+  <meta property="og:locale" content="mr_IN" />
+  <meta property="og:site_name" content="${esc(`ग्रामपंचायत ${name}`)}" />${logoUrl ? `\n  <meta property="og:image" content="${esc(logoUrl)}" />\n  <meta property="og:image:alt" content="${esc(`ग्रामपंचायत ${name} - Logo`)}" />` : ''}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="${logoUrl ? 'summary_large_image' : 'summary'}" />
+  <meta name="twitter:title" content="${esc(title)}" />
+  <meta name="twitter:description" content="${esc(description)}" />${logoUrl ? `\n  <meta name="twitter:image" content="${esc(logoUrl)}" />` : ''}
+
+  <!-- Geographic meta -->
+  <meta name="geo.region" content="IN-MH" />
+  <meta name="geo.placename" content="${esc(name)}" />
+  <meta http-equiv="content-language" content="mr" />
+
+  <!-- Sitemap -->
+  <link rel="sitemap" type="application/xml" href="${esc(siteUrl)}/sitemap.xml" />
+
+  <!-- JSON-LD structured data -->
+  <script type="application/ld+json">${JSON.stringify(structuredData)}</script>
+
+  <!-- Redirect human visitors to the React SPA -->
+  <meta http-equiv="refresh" content="0;url=/" />
+</head>
+<body>
+  <p>Redirecting to <a href="${esc(canonicalUrl)}">${esc(title)}</a>…</p>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+  res.status(200).send(html);
+});
+
+// Dynamic XML sitemap — served at /sitemap.xml (proxied by nginx)
+export const getSitemap = catchAsync(async (req, res) => {
+  ensureVillageTenant(req);
+
+  const { name } = req.tenant;
+  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
+  const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+  const siteUrl = `${protocol}://${host}`;
+  const now = new Date().toISOString().split('T')[0];
+
+  const pages = [
+    { path: '/',               priority: '1.0', changefreq: 'daily'   },
+    { path: '/about',          priority: '0.8', changefreq: 'monthly' },
+    { path: '/notices',        priority: '0.8', changefreq: 'daily'   },
+    { path: '/programs',       priority: '0.7', changefreq: 'weekly'  },
+    { path: '/schemes',        priority: '0.7', changefreq: 'monthly' },
+    { path: '/administration', priority: '0.6', changefreq: 'monthly' },
+    { path: '/gallery',        priority: '0.6', changefreq: 'weekly'  },
+    { path: '/services',       priority: '0.7', changefreq: 'monthly' },
+    { path: '/contact',        priority: '0.6', changefreq: 'monthly' },
+    { path: '/awards',         priority: '0.5', changefreq: 'monthly' },
+  ];
+
+  const urlTags = pages
+    .map(
+      ({ path, priority, changefreq }) =>
+        `  <url>\n    <loc>${siteUrl}${path}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`,
+    )
+    .join('\n');
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"\n        xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urlTags}\n</urlset>`;
+
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.status(200).send(xml);
+});
+
+// Dynamic robots.txt — served at /robots.txt (proxied by nginx)
+export const getRobotsTxt = catchAsync(async (req, res) => {
+  ensureVillageTenant(req);
+
+  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'https').split(',')[0].trim();
+  const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+  const siteUrl = `${protocol}://${host}`;
+
+  const txt = `User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin/\nDisallow: /citizen/\n\nSitemap: ${siteUrl}/sitemap.xml\n`;
+
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  res.status(200).send(txt);
+});

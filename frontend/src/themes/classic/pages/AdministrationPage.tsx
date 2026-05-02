@@ -20,7 +20,7 @@ export default function AdministrationPage() {
   }, []);
 
   const LEADER_TYPES = ["sarpanch", "upsarpanch", "grampanchayat_adhikari", "gramsevak", "leader"];
-  const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff"];
+  const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff", "rojgar_sevak", "lipik"];
 
   const leaders = members.filter((m) => LEADER_TYPES.includes(m.type));
   const staff = members.filter((m) => STAFF_TYPES.includes(m.type));

@@ -24,11 +24,23 @@ import {
   getSchools,
   getDevelopmentWorks,
   getPublicGlobalSettings,
+  getOgPreview,
+  getSitemap,
+  getRobotsTxt,
 } from '../controllers/public.controller.js';
 import { submitComplaint } from '../controllers/public.controller.js';
 import { submitTaxPayment } from '../controllers/public.controller.js';
 
 const router = Router();
+
+// OG/SEO preview HTML (for ALL crawlers: Googlebot, Bingbot, WhatsApp, etc.)
+router.get('/og', getOgPreview);
+
+// Dynamic sitemap.xml (proxied from /sitemap.xml by nginx)
+router.get('/sitemap.xml', getSitemap);
+
+// Dynamic robots.txt (proxied from /robots.txt by nginx)
+router.get('/robots.txt', getRobotsTxt);
 
 // Village info
 router.get('/village', getVillageInfo);

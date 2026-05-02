@@ -34,6 +34,8 @@ export default function Members() {
     safai_kamgar: "Safai Kamgar / सफाई कामगार",
     peon: "Peon / शिपाई",
     other_staff: "इतर कर्मचारी",
+    rojgar_sevak: "रोजगार सेवक",
+    lipik: "लिपिक",
   };
 
   const emptyForm = {
@@ -315,9 +317,11 @@ export default function Members() {
                 </optgroup>
                 <optgroup label="── कर्मचारी ──">
                   <option value="computer_operator">संगणक परिचालक</option>
-                  <option value="pump_operator">Pump Operator / पाणीपुरवठा कर्मचारी</option>
-                  <option value="safai_kamgar">Safai Kamgar / सफाई कामगार</option>
-                  <option value="peon">Peon / शिपाई</option>
+                  <option value="pump_operator">पाणीपुरवठा कर्मचारी</option>
+                  <option value="safai_kamgar">सफाई कामगार</option>
+                  <option value="peon">शिपाई</option>
+                  <option value="rojgar_sevak">रोजगार सेवक</option>
+                  <option value="lipik">लिपिक</option>
                   <option value="staff">कर्मचारी (सामान्य)</option>
                   <option value="other_staff">इतर कर्मचारी</option>
                 </optgroup>

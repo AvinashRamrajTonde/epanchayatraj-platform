@@ -4,7 +4,7 @@ import { authService } from '../services/auth.service.js';
 
 export const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  const result = await authService.login(email, password);
+  const result = await authService.login(email, password, req.tenant, req.tenantType);
   sendResponse(res, 200, result, 'Login successful');
 });
 

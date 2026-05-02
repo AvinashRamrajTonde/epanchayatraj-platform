@@ -78,8 +78,13 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const response = await api.get("/api/public/village");
         if (response.data.success && response.data.data) {
-          setVillage(response.data.data);
+          const v = response.data.data;
+          setVillage(v);
           setTenantType("village");
+          // Set document title immediately so browser tab and SPA share the real village name
+          const tehsil = v.tehsil;
+          const location = [tehsil?.name, tehsil?.district].filter(Boolean).join(", ");
+          document.title = `ग्रामपंचायत ${v.name}${location ? ` - ${location}` : ""}`;
         } else {
           setTenantType("unknown");
           setError("Village not found");

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { publicService, type Member } from "../../../services/publicService";
 import { resolveUrl } from "../../../utils/resolveUrl";
 
-const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff"];
+const STAFF_TYPES = ["staff", "computer_operator", "pump_operator", "safai_kamgar", "peon", "other_staff", "rojgar_sevak", "lipik"];
 
 const TYPES = [
   { value: "", label: "सर्व" },
@@ -28,6 +28,8 @@ const TYPE_LABEL: Record<string, string> = {
   safai_kamgar: "सफाई कामगार",
   peon: "शिपाई",
   other_staff: "इतर कर्मचारी",
+  rojgar_sevak: "रोजगार सेवक",
+  lipik: "लिपिक",
 };
 
 export default function AdministrationPage() {

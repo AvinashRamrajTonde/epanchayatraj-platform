@@ -2,13 +2,16 @@ import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ModernNavbar from "./components/ModernNavbar";
 import ModernFooter from "./components/ModernFooter";
+import SeoHead from "./components/SeoHead";
 import PopupNotice from "../classic/components/PopupNotice";
 import ScrollToTop from "../classic/components/ScrollToTop";
 import FontInjector from "../FontInjector";
 import { modernFonts } from "../fontConfig";
+import { useTenant } from "../../context/TenantContext";
 
 export default function ModernLayout() {
   const location = useLocation();
+  const { village } = useTenant();
 
   return (
     <div
@@ -16,6 +19,12 @@ export default function ModernLayout() {
       style={{ fontFamily: "var(--font-body)" }}
     >
       <FontInjector fonts={modernFonts} />
+      {/* Default SEO head — individual pages override title/description via their own <SeoHead> */}
+      <SeoHead
+        title={`मुख्यपृष्ठ`}
+        path="/"
+        image={village?.settings?.logoUrl as string | undefined}
+      />
       <ModernNavbar />
       <main className="flex-1">
         <AnimatePresence mode="wait">

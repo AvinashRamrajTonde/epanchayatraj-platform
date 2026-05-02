@@ -22,6 +22,15 @@ export const authenticate = async (req, res, next) => {
       throw new ApiError(401, 'User not found');
     }
 
+    // ── Tenant ownership check (defense-in-depth) ──────────────────
+    // A village-admin's token is only valid on their own village subdomain.
+    // Superadmins are exempt so they can manage any village.
+    if (req.tenantType === 'village' && req.tenant) {
+      if (user.role !== 'SUPERADMIN' && user.villageId !== req.tenant.id) {
+        throw new ApiError(403, 'Access denied: you do not belong to this village');
+      }
+    }
+
     req.user = user;
     next();
   } catch (error) {

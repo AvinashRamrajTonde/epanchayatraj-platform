@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
 import prisma from '../config/db.js';
+import { ROLES } from '../config/constants.js';
 
 export const authenticate = async (req, res, next) => {
   try {
@@ -26,7 +27,7 @@ export const authenticate = async (req, res, next) => {
     // A village-admin's token is only valid on their own village subdomain.
     // Superadmins are exempt so they can manage any village.
     if (req.tenantType === 'village' && req.tenant) {
-      if (user.role !== 'SUPERADMIN' && user.villageId !== req.tenant.id) {
+      if (user.role !== ROLES.SUPERADMIN && user.villageId !== req.tenant.id) {
         throw new ApiError(403, 'Access denied: you do not belong to this village');
       }
     }

@@ -115,7 +115,7 @@ docker compose exec backend npx prisma migrate deploy
 docker compose exec nginx nginx -t
 
 # Reload nginx (no downtime)
-docker compose exec nginx nginx -s reload
+
 ```
 
 ### Environment variables changed (`.env`)

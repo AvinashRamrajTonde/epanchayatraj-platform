@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../config/db.js';
 import { config } from '../config/env.js';
 import { ApiError } from '../utils/ApiError.js';
+import { ROLES } from '../config/constants.js';
 
 export const authService = {
   async login(email, password, tenant, tenantType) {
@@ -15,7 +16,7 @@ export const authService = {
     // ── Tenant isolation: verify the user belongs to this tenant ──
     if (tenantType === 'village') {
       // Non-superadmin admins must belong to this specific village
-      if (user.role !== 'SUPERADMIN') {
+      if (user.role !== ROLES.SUPERADMIN) {
         if (!tenant || user.villageId !== tenant.id) {
           // Use the same error as wrong password to avoid user enumeration
           throw new ApiError(401, 'Invalid credentials');
@@ -23,7 +24,7 @@ export const authService = {
       }
     } else if (tenantType === 'superadmin') {
       // Only superadmins may log in through the superadmin portal
-      if (user.role !== 'SUPERADMIN') {
+      if (user.role !== ROLES.SUPERADMIN) {
         throw new ApiError(401, 'Invalid credentials');
       }
     }

@@ -84,7 +84,10 @@ export const TenantProvider: React.FC<{ children: React.ReactNode }> = ({
           // Set document title immediately so browser tab and SPA share the real village name
           const tehsil = v.tehsil;
           const location = [tehsil?.name, tehsil?.district].filter(Boolean).join(", ");
-          document.title = `ग्रामपंचायत ${v.name}${location ? ` - ${location}` : ""}`;
+          const newTitle = `ग्रामपंचायत ${v.name}${location ? ` - ${location}` : ""}`;
+          document.title = newTitle;
+          // Cache so the correct title shows instantly on the next visit (no flash)
+          try { localStorage.setItem('gp_title_' + window.location.hostname, newTitle); } catch (_) {}
         } else {
           setTenantType("unknown");
           setError("Village not found");

@@ -10,13 +10,32 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="माझी ग्रामपंचायत" />
-    <title>माझी ग्रामपंचायत</title>
+    <title>ग्रामपंचायत</title>
     <meta name="description" content="ग्रामपंचायतीची अधिकृत वेबसाईट - नागरिक सेवा, सूचना, योजना आणि बरेच काही." />
-    <!-- Open Graph (default – overridden at runtime via OG preview endpoint for bots) -->
+    <!-- Open Graph: overridden per-village by backend OG endpoint for all crawlers/bots -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="माझी ग्रामपंचायत" />
+    <meta property="og:title" content="ग्रामपंचायत" />
     <meta property="og:description" content="ग्रामपंचायतीची अधिकृत वेबसाईट - नागरिक सेवा, सूचना, योजना आणि बरेच काही." />
     <meta property="og:locale" content="mr_IN" />
+    <script>
+      /* Set village title instantly — before React loads — to avoid flash.
+         1. Return visitors: title restored from localStorage cache immediately.
+         2. First visitors: provisional title derived from subdomain. */
+      (function () {
+        try {
+          var h = location.hostname;
+          var cached = localStorage.getItem('gp_title_' + h);
+          if (cached) { document.title = cached; return; }
+          var parts = h.split('.');
+          if (parts.length >= 3) {
+            var sub = parts[0];
+            if (['www', 'admin', 'superadmin', 'api'].indexOf(sub) === -1) {
+              document.title = 'ग्रामपंचायत ' + sub;
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
     <style>
       /* Hide Google Translate default widget & banner */
       .goog-te-banner-frame, #goog-gt-tt, .goog-te-balloon-frame,
